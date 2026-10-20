@@ -1,0 +1,12 @@
+[project]
+name = "q-g-cobra7"
+version = "1.0.0"
+description = "Secure COBRA-7 agent bridge for GUED-LLM"
+requires-python = ">=3.11"
+
+[tool.vercel]
+entrypoint = "qg.vercel_app:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

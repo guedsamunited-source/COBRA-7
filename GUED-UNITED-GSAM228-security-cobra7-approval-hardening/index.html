@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GSAM228 — Agent IA GUED-UNITED</title>
+<link rel="stylesheet" href="/assets/styles.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https:; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'">
+</head>
+<body>
+<canvas id="bgfx" aria-hidden="true"></canvas>
+
+<!-- GATE D'ACCÈS : inscription/connexion obligatoire -->
+<div id="gate" class="gate">
+  <form id="gateForm" class="gateCard" autocomplete="on">
+    <div class="gateOrb">🛰️</div>
+    <h1 id="gateTitle">Connexion à GSAM228</h1>
+    <p class="gateSub">Accède à ton agent IA GUED-UNITED — sécurisé et protégé côté serveur.</p>
+    <button type="button" id="gateGoogle" class="gateBtn google">🔑 Continuer avec Google</button>
+    <div class="gateSep"><span>ou par email</span></div>
+    <div id="gateNameRow" hidden><input id="gateName" type="text" placeholder="Pseudo" maxlength="40" autocomplete="nickname"></div>
+    <input id="gateEmail" type="email" placeholder="ton@email.com" required autocomplete="email">
+    <input id="gatePassword" type="password" placeholder="Mot de passe (min. 8 caractères)" required minlength="8" autocomplete="current-password">
+    <p id="gateErr" class="gateErr" hidden></p>
+    <button type="submit" id="gateSubmit" class="gateBtn primary">Se connecter →</button>
+    <button type="button" id="gateSwitch" class="gateLink">Pas de compte ? Inscris-toi</button>
+  </form>
+</div>
+
+<header class="top">
+  <div class="brand"><span class="orb"></span><b>GSAM228</b><small>GUED-UNITED · Agent v6.0</small></div>
+  <div class="sessionchip" id="sessionChip">⏳ vérification…</div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="chat">💬 Chat</button>
+  <button class="tab" data-tab="voice">🎙️ Voix</button>
+  <button class="tab" data-tab="tools">⚡ Outils</button>
+  <button class="tab" data-tab="status">📡 Statut</button>
+</nav>
+
+<main>
+  <!-- CHAT -->
+  <section class="panel active" id="tab-chat">
+    <div class="msgs" id="msgs">
+      <div class="bubble agent"><b>GSAM228</b></div>
+    </div>
+    <div class="meta" id="chatMeta"></div>
+    <form class="composer" id="chatForm">
+      <input id="chatInput" placeholder="Écris ta demande… (/aide pour les commandes)" autocomplete="off">
+      <input type="file" id="visionFile" accept="image/*" hidden>
+      <button type="button" id="visionBtn" title="Montrer un problème à l'agent (capture/photo)">📸</button>
+      <button type="button" id="micBtn" title="Dictée vocale">🎤</button>
+      <button type="submit">Envoyer ➤</button>
+    </form>
+  </section>
+
+  <!-- VOIX : conversation temps réel façon Ava -->
+  <section class="panel" id="tab-voice">
+    <div class="voiceWrap">
+      <div class="callOrb" id="callOrb"><span id="orbIcon">🎙️</span></div>
+      <div class="waves" id="waves"><i></i><i></i><i></i><i></i><i></i></div>
+      <p id="voiceStatus">Appuie pour lancer l'appel vocal — parle, j'écoute et je réponds à voix haute. Dis « stop » pour me faire taire.</p>
+      <div class="callBtns">
+        <button id="startCall" class="primary">📞 Appeler GSAM228</button>
+        <button id="hangUp" class="ghost" hidden>🔴 Raccrocher</button>
+      </div>
+      <div class="callTranscript" id="callTranscript"></div>
+      <label><input type="checkbox" id="ttsOn" checked> Lecture audio des réponses</label>
+      <label><input type="checkbox" id="bargeOn" checked> Je peux interrompre la voix (barge-in)</label>
+    </div>
+  </section>
+
+  <!-- OUTILS -->
+  <section class="panel" id="tab-tools">
+    <div class="cards">
+      <button data-cmd="/search " >🔎 Recherche web à la source</button>
+      <button data-cmd="/news ">📰 Actualités mondiales</button>
+      <button data-cmd="/meteo ">🌤️ Météo temps réel</button>
+      <button data-cmd="/finance BTC">📈 Finance & crypto</button>
+      <button data-cmd="/wiki ">📚 Wikipédia</button>
+      <button data-cmd="/mlb schedule?sportId=1">⚾ MLB live</button>
+      <button data-cmd="/nba games">🏀 NBA du jour</button>
+      <button data-cmd="/image ">🖼️ Générer une image HD</button>
+      <button data-cmd="/video ">🎬 Générer une vidéo</button>
+    </div>
+    <details class="cmds"><summary>Toutes les commandes</summary>
+      <pre>/aide /skills /model /memory /pdf /image /video /search /news /meteo /mlb /nba /finance /wiki /ping /status /clear /lang</pre>
+    </details>
+  </section>
+
+  <!-- STATUT -->
+  <section class="panel" id="tab-status">
+    <div class="gauge"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="ring-bg"/><circle cx="60" cy="60" r="52" id="ringFg" class="ring-fg"/></svg><span id="gaugeTxt">…%</span></div>
+    <div id="skillsList" class="skillsGrid"></div>
+    <button id="refreshStatus" class="ghost">↻ Re-tester maintenant</button>
+  </section>
+</main>
+
+<footer>© 2026 GUED-UNITED · GSAM228 v6.0 · architecture serverless renforcée</footer>
+<script src="/assets/app.js"></script>
+</body>
+</html>

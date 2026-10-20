@@ -1,0 +1,14 @@
+{
+  "name": "gued-united-gsam228",
+  "version": "6.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check api/_google.mjs && node --check api/_storage.mjs && node --check api/_lib.mjs && node --check api/_knowledge.mjs && node --check api/knowledge.mjs && node --check api/ai.mjs && node --check api/media.mjs && node --check api/voice.mjs && node --check api/vision.mjs && node --check api/auth/index.mjs && node --check api/auth/google.mjs && node --check api/auth/callback.mjs && node --check assets/app.js && node --check test/e2e.mjs",
+    "test": "npm run check && node test/e2e.mjs"
+  },
+  "description": "GSAM228 — agent IA GUED-UNITED, architecture serverless Vercel renforcée",
+  "dependencies": {
+    "@vercel/blob": "latest"
+  }
+}
