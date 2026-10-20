@@ -1,0 +1,39 @@
+name: COBRA-7 CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "GUED-UNITED-GSAM228-security-cobra7-approval-hardening/**"
+      - ".github/workflows/cobra7-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "GUED-UNITED-GSAM228-security-cobra7-approval-hardening/**"
+      - ".github/workflows/cobra7-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cobra7-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: GUED-UNITED-GSAM228-security-cobra7-approval-hardening
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run syntax checks and tests
+        run: npm test
