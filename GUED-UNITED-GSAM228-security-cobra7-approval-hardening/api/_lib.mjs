@@ -70,14 +70,16 @@ export function rateLimit(ip, limit = 60, windowMs = 60000) {
 /* ============================ Session HMAC (auth légère) ============================ */
 
 import crypto from 'node:crypto';
-const SECRET = process.env.GUED_SESSION_SECRET || 'local-development-only-change-me';
+const SECRET = process.env.GUED_SESSION_SECRET || (process.env.VERCEL || process.env.NODE_ENV === 'production' ? '' : 'local-development-only-change-me');
 
 export function signSession(payload) {
+  if (!SECRET) throw new Error('GUED_SESSION_SECRET must be configured before signing production sessions.');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const mac = crypto.createHmac('sha256', SECRET).update(body).digest('base64url');
   return `${body}.${mac}`;
 }
 export function verifySession(token) {
+  if (!SECRET) return null;
   if (!token || typeof token !== 'string' || !token.includes('.')) return null;
   const [body, mac] = token.split('.');
   const expect = crypto.createHmac('sha256', SECRET).update(body).digest('base64url');
