@@ -1,39 +1,69 @@
 // GSAM228 persistent serverless storage adapter.
-// Uses Vercel Blob when configured; falls back to per-instance memory only for local/dev.
+// Vercel Blob is the source of truth in production; in-memory storage is local-development only.
 const memory = new Map();
 let blobModule;
 
 async function getBlobModule() {
   if (blobModule !== undefined) return blobModule;
-  try { blobModule = await import('@vercel/blob'); }
-  catch { blobModule = null; }
+  try {
+    blobModule = await import('@vercel/blob');
+  } catch {
+    blobModule = null;
+  }
   return blobModule;
 }
 
-export async function persistentGet(key) {
-  const blob = await getBlobModule();
-  if (blob && process.env.BLOB_READ_WRITE_TOKEN) {
-    try {
-      const r = await blob.get(key, { token: process.env.BLOB_READ_WRITE_TOKEN });
-      if (r) return JSON.parse(await r.text());
-    } catch {}
+function isProduction() {
+  return Boolean(process.env.VERCEL) || process.env.NODE_ENV === 'production';
+}
+
+function requireToken() {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token && isProduction()) {
+    throw new Error('BLOB_READ_WRITE_TOKEN is required for persistent production storage.');
   }
-  return memory.get(key) ?? null;
+  return token || '';
+}
+
+export async function persistentGet(key) {
+  const token = requireToken();
+  if (!token) return memory.get(key) ?? null;
+
+  const blob = await getBlobModule();
+  if (!blob?.get) throw new Error('The @vercel/blob SDK is unavailable.');
+
+  try {
+    const result = await blob.get(key, { access: 'private', token });
+    if (!result || result.statusCode !== 200 || !result.stream) return null;
+    const text = await new Response(result.stream).text();
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error('Persistent storage read failed: ' + String(error?.message || error).slice(0, 240));
+  }
 }
 
 export async function persistentSet(key, value) {
-  memory.set(key, value);
-  const blob = await getBlobModule();
-  if (blob && process.env.BLOB_READ_WRITE_TOKEN) {
-    try {
-      await blob.put(key, JSON.stringify(value), {
-        access: 'private', addRandomSuffix: false, allowOverwrite: true,
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-      });
-      return true;
-    } catch {}
+  const token = requireToken();
+  if (!token) {
+    memory.set(key, value);
+    return true;
   }
-  return false;
+
+  const blob = await getBlobModule();
+  if (!blob?.put) throw new Error('The @vercel/blob SDK is unavailable.');
+
+  try {
+    await blob.put(key, JSON.stringify(value), {
+      access: 'private',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      token,
+    });
+    memory.set(key, value);
+    return true;
+  } catch (error) {
+    throw new Error('Persistent storage write failed: ' + String(error?.message || error).slice(0, 240));
+  }
 }
 
 export function isPersistentStorageConfigured() {
