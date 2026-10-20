@@ -204,6 +204,8 @@ async function voiceTurn(transcript) {
 function startCall() {
   if (!SR) { vStatus.textContent = '🎤 Appel vocal non supporté par ce navigateur (Chrome requis).'; return; }
   inCall = true; transcriptBox.innerHTML = '';
+  // The user explicitly started a voice call, so enable TTS for this call only.
+  $('#ttsOn').checked = true;
   $('#startCall').hidden = true; $('#hangUp').hidden = false;
   orb.classList.add('incall'); orbIcon.textContent = '🎙️';
   vStatus.textContent = 'Appel en cours — parle naturellement, je réponds à voix haute.';
@@ -224,7 +226,7 @@ function startCall() {
   speak('GSAM228');
 }
 function hangUp() {
-  inCall = false; try { callRecog?.stop(); } catch {}
+  inCall = false; $('#ttsOn').checked = false; try { callRecog?.stop(); } catch {}
   speechSynthesis.cancel();
   $('#startCall').hidden = false; $('#hangUp').hidden = true;
   orb.classList.remove('incall', 'speaking'); orbIcon.textContent = '📞';
