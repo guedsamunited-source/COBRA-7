@@ -165,6 +165,10 @@ export async function authHandler(req, res) {
   const ip = (req.headers['x-forwarded-for'] || 'local').split(',')[0].trim();
   if (!rateLimit(ip, 20, 60000)) return send(res, 429, { error: 'Trop de tentatives — patiente une minute.' });
   if (!sessionSecret()) return send(res, 503, { error: 'GUED_SESSION_SECRET doit être configuré dans Vercel.' });
+  const production = Boolean(process.env.VERCEL || process.env.NODE_ENV === 'production');
+  if (production && !isPersistentStorageConfigured()) {
+    return send(res, 503, { error: 'BLOB_READ_WRITE_TOKEN doit être configuré pour activer les comptes et la mémoire persistante.' });
+  }
 
   let body = {};
   try { body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {}); } catch { return send(res, 400, { error: 'JSON invalide.' }); }
