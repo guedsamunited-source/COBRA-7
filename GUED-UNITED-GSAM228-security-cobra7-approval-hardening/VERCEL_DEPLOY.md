@@ -2,16 +2,19 @@
 
 ## 1. GitHub
 
-Mettre **le contenu** de ce dossier à la racine du dépôt GitHub. Ne pas envoyer le ZIP et ne pas conserver les dossiers Android `build/`.
+Le code applicatif est conservé dans le dossier `GUED-UNITED-GSAM228-security-cobra7-approval-hardening/` à la racine du dépôt `COBRA-7`. Ne pas envoyer le ZIP et ne pas déplacer les fichiers au hasard.
 
 ## 2. Vercel
 
-Importer le dépôt GitHub dans Vercel.
+Relier le projet au dépôt GitHub `guedsamunited-source/COBRA-7` et configurer exactement :
 
-- Framework Preset: Other / détection automatique
-- Build Command: vide
-- Output Directory: vide
-- Root Directory: `./`
+- Framework Preset: Other / détection automatique (pas FastAPI)
+- Root Directory: `GUED-UNITED-GSAM228-security-cobra7-approval-hardening`
+- Build Command: vide / détection automatique
+- Output Directory: vide / détection automatique
+- Node.js: `24.x` ou une version prise en charge
+
+Vercel doit détecter `api/**/*.mjs` comme fonctions Node.js serverless. Le répertoire racine doit contenir `index.html`, `package.json`, `vercel.json`, `assets/` et `api/`.
 
 Vercel détecte `api/**/*.mjs` comme fonctions serverless.
 
